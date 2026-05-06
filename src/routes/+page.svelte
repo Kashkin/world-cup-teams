@@ -9,7 +9,6 @@
   import Share2 from '@lucide/svelte/icons/share-2';
   import Printer from '@lucide/svelte/icons/printer';
   import RotateCcw from '@lucide/svelte/icons/rotate-ccw';
-  import Trophy from '@lucide/svelte/icons/trophy';
 
   const ranking = new PersistedState<string[]>('wc26.ranking', []);
 
@@ -112,60 +111,20 @@
         <p class="text-foreground/85 mt-3 text-base">Build your squad. Chase the glory.</p>
       </div>
 
-      <!-- Trophy hero block -->
-      <div class="relative h-40 w-full sm:h-56 lg:h-64 lg:w-[28rem]" aria-hidden="true">
-        <!-- Stadium light radial wash + confetti dots -->
-        <div
-          class="absolute inset-0 rounded-2xl"
-          style="
-            background:
-              radial-gradient(circle at 50% 65%, oklch(0.78 0.18 80 / 0.55), transparent 55%),
-              radial-gradient(circle at 30% 30%, oklch(0.55 0.2 250 / 0.35), transparent 60%),
-              radial-gradient(circle at 80% 25%, oklch(0.55 0.22 25 / 0.3), transparent 55%);
-          "
-        ></div>
-        <!-- Confetti specks -->
-        <div class="pointer-events-none absolute inset-0">
-          <span
-            class="absolute h-1.5 w-3 rotate-12 rounded-sm bg-[oklch(0.7_0.22_25)]"
-            style="top: 28%; left: 18%;"
-          ></span>
-          <span
-            class="absolute h-1.5 w-3 -rotate-12 rounded-sm bg-[oklch(0.7_0.18_245)]"
-            style="top: 52%; left: 22%;"
-          ></span>
-          <span
-            class="absolute h-1 w-2 rotate-45 rounded-sm bg-[oklch(0.78_0.18_80)]"
-            style="top: 18%; left: 38%;"
-          ></span>
-          <span
-            class="absolute h-1.5 w-3 rotate-6 rounded-sm bg-[oklch(0.7_0.22_25)]"
-            style="top: 72%; left: 30%;"
-          ></span>
-          <span
-            class="absolute h-1 w-2 -rotate-12 rounded-sm bg-[oklch(0.7_0.18_245)]"
-            style="top: 80%; left: 70%;"
-          ></span>
-          <span
-            class="absolute h-1.5 w-3 rotate-30 rounded-sm bg-[oklch(0.78_0.18_80)]"
-            style="top: 25%; left: 78%;"
-          ></span>
-        </div>
-        <!-- Trophy glow + icon -->
-        <div class="absolute inset-0 grid place-items-center">
-          <div class="relative">
-            <div
-              class="absolute inset-0 -m-8 rounded-full blur-2xl"
-              style="background: radial-gradient(circle, oklch(0.85 0.18 80 / 0.6), transparent 65%);"
-            ></div>
-            <Trophy
-              class="relative size-32 sm:size-40 lg:size-48"
-              style="color: oklch(0.85 0.16 80); filter: drop-shadow(0 4px 24px oklch(0.65 0.22 35 / 0.5));"
-              strokeWidth={1.5}
-            />
-          </div>
-        </div>
-      </div>
+      <!-- Hero image: trophy + stadium composite. Faded into the page on the left
+           with a CSS mask so it blends rather than sitting in a hard rectangle. -->
+      <img
+        src="/world-cup.png"
+        alt=""
+        width="1586"
+        height="992"
+        aria-hidden="true"
+        class="h-44 w-full self-center object-contain object-right sm:h-56 lg:h-72 lg:w-[32rem]"
+        style="
+          mask-image: linear-gradient(to right, transparent 0%, black 25%, black 100%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 25%, black 100%);
+        "
+      />
     </div>
 
     <!-- Buttons positioned absolute top-right of the hero -->
