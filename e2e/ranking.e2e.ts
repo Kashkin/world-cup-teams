@@ -32,6 +32,53 @@ test('ranking persists across reload', async ({ page, context }) => {
   await expect(ranked.nth(1)).toContainText('Brazil');
 });
 
+test('shared URL identical to saved list does not show preview banner', async ({
+  page,
+  context,
+}) => {
+  await context.addInitScript(() => {
+    localStorage.setItem('wc26.ranking', JSON.stringify(['ARG', 'BRA']));
+  });
+
+  await page.goto('/#r=ARG,BRA');
+
+  await expect(page.getByText(/viewing a shared list/i)).not.toBeVisible();
+  const ranked = page.locator('ol > li');
+  await expect(ranked.nth(0)).toContainText('Argentina');
+  await expect(ranked.nth(1)).toContainText('Brazil');
+});
+
+test('editing while previewing a shared list adopts it as your own', async ({ page, context }) => {
+  // Seed only on the first page load — addInitScript runs on every navigation,
+  // and we navigate again later to verify persistence.
+  await context.addInitScript(() => {
+    if (!localStorage.getItem('wc26.ranking')) {
+      localStorage.setItem('wc26.ranking', JSON.stringify(['ARG', 'BRA']));
+    }
+  });
+
+  await page.goto('/#r=FRA,GER');
+  await expect(page.getByText(/viewing a shared list/i)).toBeVisible();
+
+  // Adding a team while in preview should implicitly save the (now-modified) list.
+  await page.getByRole('button', { name: 'Add Spain' }).click();
+  await expect(page.getByText(/viewing a shared list/i)).not.toBeVisible();
+
+  const ranked = page.locator('ol > li');
+  await expect(ranked).toHaveCount(3);
+  await expect(ranked.nth(0)).toContainText('France');
+  await expect(ranked.nth(1)).toContainText('Germany');
+  await expect(ranked.nth(2)).toContainText('Spain');
+
+  // Navigate to the bare homepage — the modified list should still be there.
+  await page.goto('/');
+  const persisted = page.locator('ol > li');
+  await expect(persisted).toHaveCount(3);
+  await expect(persisted.nth(0)).toContainText('France');
+  await expect(persisted.nth(1)).toContainText('Germany');
+  await expect(persisted.nth(2)).toContainText('Spain');
+});
+
 test('shared URL with existing list shows preview banner', async ({ page, context }) => {
   // Seed localStorage with an existing ranking before any page load.
   await context.addInitScript(() => {

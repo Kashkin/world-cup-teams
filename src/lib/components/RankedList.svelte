@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { dndzone, type DndEvent } from 'svelte-dnd-action';
   import { teamsByCode } from '$lib/teams';
   import TeamCard from './TeamCard.svelte';
@@ -15,12 +16,12 @@
   type DndItem = { id: string };
   let items = $state<DndItem[]>([]);
 
-  // Mirror the ranking prop into local mutable items. The dndzone action mutates this
-  // array during drag, which is why we can't use $derived here — but we resync whenever
-  // the prop changes externally (share-link load, remove via × button, swap via ↑↓).
+  // Mirror the ranking prop into local mutable items. dndzone mutates `items` mid-drag
+  // (placeholder shadow row), so we MUST untrack the local read — otherwise the
+  // mid-drag mutation re-fires this effect and clobbers the in-flight reorder.
   $effect(() => {
     const propIds = ranking.join('|');
-    const localIds = items.map((i) => i.id).join('|');
+    const localIds = untrack(() => items.map((i) => i.id).join('|'));
     if (propIds !== localIds) {
       items = ranking.map((id) => ({ id }));
     }

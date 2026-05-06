@@ -36,41 +36,47 @@
     }
   });
 
-  // Boot: if URL hash is present, decide between adopt and preview.
+  // Boot: figure out whether the URL hash represents the user's own list,
+  // a different shared list, or nothing at all. Preview mode only triggers
+  // when the URL list differs from what's saved AND the user has a saved list.
   onMount(() => {
-    const incomingHash = location.hash;
-    if (incomingHash.startsWith('#r=')) {
-      const incoming = decodeRanking(incomingHash.slice(3));
-      if (incoming.length > 0) {
-        if (ranking.current.length === 0) {
-          ranking.current = incoming;
-          displayed = incoming;
-        } else {
-          displayed = incoming;
-          previewMode = true;
-        }
-      } else {
-        displayed = ranking.current;
-      }
+    const incoming = location.hash.startsWith('#r=')
+      ? decodeRanking(location.hash.slice(3))
+      : [];
+    const saved = ranking.current;
+    const sameAsSaved =
+      incoming.length === saved.length && incoming.every((c, i) => c === saved[i]);
+
+    if (incoming.length === 0 || sameAsSaved) {
+      // No URL list, or URL matches what's saved. Render the saved list.
+      displayed = saved;
+    } else if (saved.length === 0) {
+      // First time landing here, no saved list — adopt the shared one as own.
+      ranking.current = incoming;
+      displayed = incoming;
     } else {
-      displayed = ranking.current;
+      // URL list differs from saved list. Show as a preview, don't write yet.
+      displayed = incoming;
+      previewMode = true;
     }
     booted = true;
   });
 
   let unrankedTeams = $derived(teams.filter((t) => !displayed.includes(t.code)));
 
+  // Any edit while in preview mode implicitly adopts the shared list as your own,
+  // i.e. localStorage gets out of sync with the URL → treat it as the user's list.
   function add(code: string) {
-    if (previewMode) displayed = [...displayed, code];
-    else ranking.current = [...ranking.current, code];
+    previewMode = false;
+    ranking.current = [...displayed, code];
   }
   function remove(code: string) {
-    if (previewMode) displayed = displayed.filter((c) => c !== code);
-    else ranking.current = ranking.current.filter((c) => c !== code);
+    previewMode = false;
+    ranking.current = displayed.filter((c) => c !== code);
   }
   function reorder(next: string[]) {
-    if (previewMode) displayed = next;
-    else ranking.current = next;
+    previewMode = false;
+    ranking.current = next;
   }
 
   function saveAsMine() {
