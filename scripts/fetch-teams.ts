@@ -70,24 +70,35 @@ function parseHistorical(wikitext: string): Historical {
   }
 
   const rows = table.json() as Array<Record<string, unknown>>;
-  const yearRows = rows
-    .map((r) => {
-      const yearText = cellText(r['Year']);
-      const yearMatch = yearText.match(/(\d{4})/);
-      const roundRaw = cellText(r['Round']).replace(/'''/g, '').trim();
-      const round = roundRaw.toLowerCase();
-      const winsText = cellText(r['W']).trim();
-      const wins = parseInt(winsText, 10);
-      return {
-        year: yearMatch ? parseInt(yearMatch[1], 10) : NaN,
-        round,
-        wins: Number.isFinite(wins) ? wins : 0,
-        winsValid: winsText !== '' && Number.isFinite(wins),
-      };
-    })
-    // Only count tournaments the team actually played: valid year + valid W column
-    // (filters out future rows like 2026/2030/2034 with no results, and Total row)
-    .filter((r) => Number.isFinite(r.year) && r.winsValid);
+  const parsed = rows.map((r) => {
+    const yearText = cellText(r['Year']);
+    const yearMatch = yearText.match(/(\d{4})/);
+    const roundRaw = cellText(r['Round']).replace(/'''/g, '').trim();
+    const round = roundRaw.toLowerCase();
+    const winsText = cellText(r['W']).trim();
+    const wins = parseInt(winsText, 10);
+    return {
+      year: yearMatch ? parseInt(yearMatch[1], 10) : NaN,
+      yearText: yearText.toLowerCase(),
+      round,
+      wins: Number.isFinite(wins) ? wins : 0,
+    };
+  });
+
+  // Only count tournaments the team actually played: valid past year + recognised round.
+  // Filters out future tournaments (Qualified / To be determined), DNQ rows, and non-rounds.
+  // Wikipedia's W column is sometimes blank for trophy rows (e.g. England 1966) — we don't
+  // gate on it, so trophies/finish are still recognised; missing wins just contribute 0.
+  const yearRows = parsed.filter(
+    (r) => Number.isFinite(r.year) && r.year < 2026 && Object.hasOwn(ROUND_TO_FINISH, r.round),
+  );
+
+  // Wikipedia's "Total" row aggregates across all tournaments and is typically more accurate
+  // than summing per-row wins, since some Champions rows have blank W cells due to rowspan
+  // markup. Fall back to per-row sum if no Total row is present.
+  const totalRow = parsed.find((r) => r.yearText.includes('total') && r.wins > 0);
+  const summedWins = yearRows.reduce((sum, r) => sum + r.wins, 0);
+  const matchWins = totalRow ? totalRow.wins : summedWins;
 
   const champYears = yearRows.filter((r) => r.round === 'champions').map((r) => r.year);
   const finishes = yearRows.map((r) => ROUND_TO_FINISH[r.round] ?? 'Group stage');
@@ -100,7 +111,7 @@ function parseHistorical(wikitext: string): Historical {
     appearances: yearRows.length,
     trophies: champYears.length,
     lastTrophy: champYears.length ? Math.max(...champYears) : null,
-    matchWins: yearRows.reduce((sum, r) => sum + r.wins, 0),
+    matchWins,
     bestFinish,
   };
 }
@@ -130,10 +141,13 @@ async function parseOne(entry: Wc2026Entry): Promise<Historical> {
 }
 
 async function main() {
-  const brazil = WC2026_TEAMS.find((t) => t.code === 'BRA');
-  if (!brazil) throw new Error('BRA missing from constants');
-  const historical = await parseOne(brazil);
-  console.log('Brazil historical:', historical);
+  const codes = ['BRA', 'ENG', 'SEN', 'CPV'];
+  for (const code of codes) {
+    const entry = WC2026_TEAMS.find((t) => t.code === code);
+    if (!entry) throw new Error(`${code} missing from constants`);
+    const h = await parseOne(entry);
+    console.log(`${code} ${entry.name}:`, h);
+  }
 }
 
 main().catch((e: unknown) => {
