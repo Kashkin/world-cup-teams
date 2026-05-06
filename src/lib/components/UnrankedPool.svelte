@@ -3,6 +3,7 @@
   import TeamCard from './TeamCard.svelte';
   import { Input } from '$lib/components/ui/input';
   import { Button } from '$lib/components/ui/button';
+  import { send, receive } from '$lib/transitions';
 
   interface Props {
     teams: readonly Team[];
@@ -32,7 +33,11 @@
   {:else}
     <ul class="flex flex-col gap-2">
       {#each filtered as team (team.code)}
-        <li class="flex items-center gap-2">
+        <li
+          class="flex items-center gap-2"
+          in:receive={{ key: team.code }}
+          out:send={{ key: team.code }}
+        >
           <div class="flex-1"><TeamCard {team} /></div>
           <Button
             size="icon-sm"

@@ -3,6 +3,7 @@
   import { teamsByCode } from '$lib/teams';
   import TeamCard from './TeamCard.svelte';
   import { Button } from '$lib/components/ui/button';
+  import { send, receive } from '$lib/transitions';
 
   interface Props {
     ranking: readonly string[];
@@ -54,7 +55,11 @@
     {#each items as { id }, i (id)}
       {@const team = teamsByCode.get(id)}
       {#if team}
-        <li class="flex items-center gap-2">
+        <li
+          class="flex items-center gap-2"
+          in:receive={{ key: id }}
+          out:send={{ key: id }}
+        >
           <div class="flex-1"><TeamCard {team} rank={i + 1} /></div>
           <div class="flex gap-2 print:hidden">
             <Button
