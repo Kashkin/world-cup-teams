@@ -33,7 +33,9 @@
 <section class="flex flex-col gap-3 print:hidden">
   <!-- Search input -->
   <label class="relative block">
-    <Search class="text-foreground/45 pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+    <Search
+      class="text-foreground/45 pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
+    />
     <input
       type="search"
       bind:value={query}
@@ -72,7 +74,7 @@
       class="text-primary hover:bg-primary/10 hover:text-primary mt-1 h-12 rounded-xl border border-white/8"
     >
       <Plus class="size-4" />
-      Add more teams
+      Show more teams
     </Button>
   {/if}
 </section>

@@ -29,7 +29,7 @@
       parts.push(`${team.matchWins} ${team.matchWins === 1 ? 'win' : 'wins'}`);
     }
     if (team.trophies > 0) {
-      parts.push(`${team.trophies}× Champion${team.lastTrophy ? ` (${team.lastTrophy})` : ''}`);
+      parts.push(`${team.trophies} × Champion${team.lastTrophy ? ` (${team.lastTrophy})` : ''}`);
     } else if (team.bestFinish !== 'Group stage') {
       parts.push(`Best: ${team.bestFinish}`);
     }
@@ -46,8 +46,8 @@
     <div
       class="font-display flex w-12 shrink-0 items-center justify-center text-2xl tracking-wide tabular-nums"
       style={accent
-        ? 'background: oklch(0.32 0.12 18); color: oklch(0.85 0.18 25);'
-        : 'color: oklch(0.55 0.04 263);'}
+        ? 'background-image: linear-gradient(135deg, oklch(0.85 0.04 263 / 0.2) 0%, oklch(0.45 0.14 263 / 0.5) 100%); color: oklch(0.95 0.04 263);'
+        : 'color: oklch(0.85 0.04 263);'}
     >
       {rank}{accent ? '.' : ''}
     </div>

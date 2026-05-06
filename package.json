@@ -23,6 +23,8 @@
     "@eslint/compat": "latest",
     "@eslint/js": "latest",
     "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource/bebas-neue": "^5.2.7",
+    "@fontsource/permanent-marker": "^5.2.7",
     "@internationalized/date": "^3.12.1",
     "@lucide/svelte": "^1.14.0",
     "@playwright/test": "^1.59.1",

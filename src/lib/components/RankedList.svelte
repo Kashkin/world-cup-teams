@@ -18,7 +18,7 @@
     /** Total team pool, for the "n/N" squad-size display. */
     totalTeams?: number;
   }
-  let { ranking, onReorder, onRemove, totalTeams = 26 }: Props = $props();
+  let { ranking, onReorder, onRemove, totalTeams = 48 }: Props = $props();
 
   type DndItem = { id: string };
   let items = $state<DndItem[]>([]);
@@ -55,14 +55,14 @@
   }
 </script>
 
-<section class="flex flex-col gap-4">
+<section class="flex flex-col gap-4 h-full">
   <!-- Squad header with magenta bar accent -->
   <div class="flex items-center justify-between">
     <h2
       class="font-display text-foreground/95 flex items-center gap-3 text-xl tracking-wider uppercase"
     >
       <span class="bg-primary inline-block h-5 w-1 rounded-sm"></span>
-      My Squad
+      My teams
       <span class="text-foreground/55 text-base font-normal normal-case tabular-nums">
         ({items.length}/{totalTeams})
       </span>
@@ -82,7 +82,19 @@
   {#if items.length > 0}
     <ol
       class="flex flex-col gap-2"
-      use:dndzone={{ items, flipDurationMs: 150, type: 'teams' }}
+      use:dndzone={{
+        items,
+        flipDurationMs: 150,
+        type: 'teams',
+        // Override the default rgba(255,255,102) yellow outline with a subtle
+        // magenta dashed ring that matches the theme. outline (not box-shadow)
+        // because the dndzone is a flex container and outline doesn't push siblings.
+        dropTargetStyle: {
+          outline: '2px dashed oklch(0.65 0.22 15 / 0.5)',
+          'outline-offset': '6px',
+          'border-radius': '12px',
+        },
+      }}
       onconsider={consider}
       onfinalize={finalize}
     >
@@ -136,21 +148,21 @@
     <div
       class="border-foreground/15 grid place-items-center rounded-2xl border-2 border-dashed px-6 py-16 text-center print:hidden"
     >
-      <Trophy class="text-foreground/30 mb-3 size-12" strokeWidth={1.5} />
+      <Trophy class="text-foreground mb-3 size-12" strokeWidth={1.5} />
       <p class="text-foreground/85 text-base font-medium">Add teams from the left</p>
-      <p class="text-foreground/50 mt-1 text-sm">Start building your dream World Cup squad!</p>
+      <p class="text-foreground/50 mt-1 text-sm">Start planning the teams you'll support!</p>
     </div>
   {/if}
 
   <!-- Quote callout -->
   <aside
-    class="relative flex items-center gap-4 overflow-hidden rounded-xl border border-white/8 p-5 print:hidden"
-    style="background-image: linear-gradient(135deg, oklch(0.27 0.12 18) 0%, oklch(0.22 0.08 18) 100%);"
+    class="relative flex items-center gap-4 mt-auto overflow-hidden rounded-xl border border-white/8 p-5 print:hidden"
+    style="background-image: linear-gradient(135deg, oklch(0.27 0.12 18 / 0.2) 0%, oklch(0.22 0.08 18 / 0.5) 100%);"
   >
     <Quote class="text-primary size-5 shrink-0 self-start" fill="currentColor" />
-    <p class="text-foreground/90 flex-1 text-sm leading-relaxed italic">
+    <p class="text-foreground/90 flex-1 text-sm leading-relaxed">
       The World Cup is more than a tournament.<br />It's where legends are made.
     </p>
-    <SoccerBall class="text-primary/40 size-12 shrink-0" />
+    <SoccerBall class="text-primary-foreground/80 size-12 shrink-0" />
   </aside>
 </section>
