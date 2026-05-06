@@ -6,7 +6,6 @@
   import ArrowUp from '@lucide/svelte/icons/arrow-up';
   import ArrowDown from '@lucide/svelte/icons/arrow-down';
   import X from '@lucide/svelte/icons/x';
-  import Trash2 from '@lucide/svelte/icons/trash-2';
   import Trophy from '@lucide/svelte/icons/trophy';
   import Quote from '@lucide/svelte/icons/quote';
   import SoccerBall from './SoccerBall.svelte';
@@ -49,10 +48,6 @@
     [next[i], next[j]] = [next[j], next[i]];
     onReorder(next);
   }
-
-  function clearAll() {
-    for (const code of [...ranking]) onRemove(code);
-  }
 </script>
 
 <section class="flex flex-col gap-4 h-full">
@@ -67,16 +62,6 @@
         ({items.length}/{totalTeams})
       </span>
     </h2>
-    {#if items.length > 0}
-      <button
-        type="button"
-        onclick={clearAll}
-        class="text-primary hover:text-primary/80 inline-flex items-center gap-1.5 text-xs font-medium transition-colors print:hidden"
-      >
-        <Trash2 class="size-3.5" />
-        Clear all
-      </button>
-    {/if}
   </div>
 
   {#if items.length > 0}

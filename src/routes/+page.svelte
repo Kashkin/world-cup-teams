@@ -30,7 +30,11 @@
     }
   });
 
-  onMount(() => {
+  // Decide what to show based on the current URL hash + saved list. Re-run on
+  // every hashchange — SvelteKit's client router treats same-path different-hash
+  // as a same-page navigation, so onMount alone misses URL changes after first
+  // mount (e.g. user pastes a different shared URL into the address bar).
+  function bootFromHash() {
     const incoming = location.hash.startsWith('#r=') ? decodeRanking(location.hash.slice(3)) : [];
     const saved = ranking.current;
     const sameAsSaved =
@@ -38,14 +42,23 @@
 
     if (incoming.length === 0 || sameAsSaved) {
       displayed = saved;
+      previewMode = false;
     } else if (saved.length === 0) {
       ranking.current = incoming;
       displayed = incoming;
+      previewMode = false;
     } else {
       displayed = incoming;
       previewMode = true;
     }
+  }
+
+  onMount(() => {
+    bootFromHash();
     booted = true;
+    const onHash = () => bootFromHash();
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
   });
 
   let unrankedTeams = $derived(teams.filter((t) => !displayed.includes(t.code)));
@@ -81,7 +94,7 @@
   }
 
   function confirmReset() {
-    if (confirm('Clear your ranking?')) {
+    if (confirm('Clear your teams?')) {
       ranking.current = [];
       previewMode = false;
     }
@@ -108,7 +121,7 @@
             my teams
           </span>
         </h1>
-        <p class="text-foreground/85 mt-4 text-base">
+        <p class="text-foreground/85 mt-4 text-base print:hidden">
           Pick your favourites. Show your allegiances.
         </p>
       </div>
@@ -121,7 +134,7 @@
         width="1322"
         height="1190"
         aria-hidden="true"
-        class="h-44 w-full opacity-80 self-center object-cover object-top-right sm:h-56 lg:h-72"
+        class="h-44 w-full opacity-80 self-center object-cover object-top-right print:hidden sm:h-56 lg:h-72"
         style="
           mask-image: linear-gradient(to right, transparent 0%, black 25%, black 100%);
           -webkit-mask-image: linear-gradient(to right, transparent 0%, black 25%, black 100%);
@@ -130,7 +143,9 @@
     </div>
 
     <!-- Buttons positioned absolute top-right of the hero -->
-    <div class="absolute top-8 right-6 flex items-center gap-2 print:hidden">
+    <div
+      class="absolute max-lg:bottom-8 max-lg:left-4 lg:top-8 lg:right-6 flex items-center gap-2 print:hidden"
+    >
       {#if copiedAt > 0}
         <span class="text-foreground/70 mr-2 text-xs">Link copied!</span>
       {/if}

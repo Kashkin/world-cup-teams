@@ -130,8 +130,9 @@
         oklch(0.35 0.12 250 / 0.45),
         transparent 70%
       ),
-      radial-gradient(ellipse 400px 300px at 95% 5%, oklch(0.55 0.2 25 / 0.25), transparent 70%);
+      radial-gradient(ellipse 800px 600px at 95% 5%, oklch(0.55 0.2 25 / 0.25), transparent 70%);
     background-attachment: fixed;
+    @apply print:bg-none;
   }
   html {
     @apply font-sans;

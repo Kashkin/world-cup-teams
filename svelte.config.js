@@ -7,7 +7,10 @@ const config = {
     runes: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : true),
   },
   kit: {
-    adapter: adapter({ fallback: 'index.html' }),
+    // No fallback — every route is prerendered (single-route SPA), and
+    // setting `fallback: 'index.html'` would overwrite the prerendered home
+    // page (with all the SEO meta tags) with the empty SPA shell.
+    adapter: adapter(),
   },
 };
 
