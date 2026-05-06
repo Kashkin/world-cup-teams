@@ -77,4 +77,11 @@ export default ts.config(
       },
     },
   },
+  {
+    // shadcn-svelte components are vendored; keep them as-shipped.
+    files: ['src/lib/components/ui/**'],
+    rules: {
+      'svelte/no-navigation-without-resolve': 'off',
+    },
+  },
 );
