@@ -38,6 +38,9 @@ const CsvRowSchema = z.object({
   code: z.string().length(3),
   name: z.string().min(1),
   confederation: z.enum(['AFC', 'CAF', 'CONCACAF', 'CONMEBOL', 'OFC', 'UEFA']),
+  ranking: z
+    .union([z.literal(''), z.coerce.number().int().positive()])
+    .transform((v) => (v === '' ? null : v)),
   appearances: z.coerce.number().int().nonnegative(),
   trophies: z.coerce.number().int().nonnegative(),
   lastTrophy: z
@@ -125,7 +128,7 @@ async function main() {
       name: entry.name,
       confederation: entry.confederation,
       flag: `/flags/${entry.code.toLowerCase()}.svg`,
-      ranking: null, // TODO: pull from FIFA's monthly ranking when we wire it up
+      ranking: row.ranking,
       appearances: row.appearances,
       trophies: row.trophies,
       lastTrophy: row.lastTrophy,

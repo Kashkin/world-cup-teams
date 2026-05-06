@@ -1,49 +1,49 @@
-code,name,confederation,appearances,trophies,lastTrophy,matchWins,bestFinish
-CAN,Canada,CONCACAF,2,0,,0,Group stage
-CUW,Curaçao,CONCACAF,0,0,,0,Group stage
-HAI,Haiti,CONCACAF,1,0,,0,Group stage
-MEX,Mexico,CONCACAF,17,0,,17,Quarter-finals
-PAN,Panama,CONCACAF,1,0,,0,Group stage
-USA,United States,CONCACAF,11,0,,9,Third
-ARG,Argentina,CONMEBOL,18,3,2022,53,Champion
-BRA,Brazil,CONMEBOL,22,5,2002,79,Champion
-COL,Colombia,CONMEBOL,6,0,,9,Quarter-finals
-ECU,Ecuador,CONMEBOL,4,0,,5,Round of 16
-PAR,Paraguay,CONMEBOL,8,0,,8,Quarter-finals
-URU,Uruguay,CONMEBOL,14,2,1950,26,Champion
-AUS,Australia,AFC,6,0,,4,Round of 16
-IRN,Iran,AFC,6,0,,3,Group stage
-IRQ,Iraq,AFC,1,0,,0,Group stage
-JOR,Jordan,AFC,0,0,,0,Group stage
-JPN,Japan,AFC,7,0,,7,Round of 16
-KOR,South Korea,AFC,11,0,,8,Fourth
-KSA,Saudi Arabia,AFC,6,0,,4,Round of 16
-QAT,Qatar,AFC,1,0,,0,Group stage
-UZB,Uzbekistan,AFC,0,0,,0,Group stage
-ALG,Algeria,CAF,4,0,,3,Round of 16
-CIV,Côte d'Ivoire,CAF,3,0,,3,Group stage
-COD,DR Congo,CAF,1,0,,0,Group stage
-CPV,Cape Verde,CAF,0,0,,0,Group stage
-EGY,Egypt,CAF,3,0,,0,Round of 16
-GHA,Ghana,CAF,4,0,,5,Quarter-finals
-MAR,Morocco,CAF,6,0,,6,Fourth
-RSA,South Africa,CAF,3,0,,2,Group stage
-SEN,Senegal,CAF,3,0,,5,Quarter-finals
-TUN,Tunisia,CAF,6,0,,3,Group stage
-NZL,New Zealand,OFC,2,0,,0,Group stage
-AUT,Austria,UEFA,7,0,,12,Third
-BEL,Belgium,UEFA,14,0,,22,Third
-BIH,Bosnia and Herzegovina,UEFA,1,0,,1,Group stage
-CRO,Croatia,UEFA,6,0,,17,Runner-up
-CZE,Czech Republic,UEFA,9,0,,12,Runner-up
-ENG,England,UEFA,16,1,1966,33,Champion
-ESP,Spain,UEFA,16,1,2010,32,Champion
-FRA,France,UEFA,16,2,2018,41,Champion
-GER,Germany,UEFA,20,4,2014,72,Champion
-NED,Netherlands,UEFA,11,0,,31,Runner-up
-NOR,Norway,UEFA,3,0,,2,Round of 16
-POR,Portugal,UEFA,8,0,,17,Third
-SCO,Scotland,UEFA,8,0,,4,Group stage
-SUI,Switzerland,UEFA,12,0,,14,Quarter-finals
-SWE,Sweden,UEFA,12,0,,20,Runner-up
-TUR,Turkey,UEFA,2,0,,5,Third
+code,name,confederation,ranking,appearances,trophies,lastTrophy,matchWins,bestFinish
+CAN,Canada,CONCACAF,30,2,0,,0,Group stage
+CUW,Curaçao,CONCACAF,82,0,0,,0,Group stage
+HAI,Haiti,CONCACAF,83,1,0,,0,Group stage
+MEX,Mexico,CONCACAF,15,17,0,,17,Quarter-finals
+PAN,Panama,CONCACAF,33,1,0,,0,Group stage
+USA,United States,CONCACAF,16,11,0,,9,Third
+ARG,Argentina,CONMEBOL,3,18,3,2022,53,Champion
+BRA,Brazil,CONMEBOL,6,22,5,2002,79,Champion
+COL,Colombia,CONMEBOL,13,6,0,,9,Quarter-finals
+ECU,Ecuador,CONMEBOL,23,4,0,,5,Round of 16
+PAR,Paraguay,CONMEBOL,40,8,0,,8,Quarter-finals
+URU,Uruguay,CONMEBOL,17,14,2,1950,26,Champion
+AUS,Australia,AFC,27,6,0,,4,Round of 16
+IRN,Iran,AFC,21,6,0,,3,Group stage
+IRQ,Iraq,AFC,57,1,0,,0,Group stage
+JOR,Jordan,AFC,63,0,0,,0,Group stage
+JPN,Japan,AFC,18,7,0,,7,Round of 16
+KOR,South Korea,AFC,25,11,0,,8,Fourth
+KSA,Saudi Arabia,AFC,61,6,0,,4,Round of 16
+QAT,Qatar,AFC,55,1,0,,0,Group stage
+UZB,Uzbekistan,AFC,50,0,0,,0,Group stage
+ALG,Algeria,CAF,28,4,0,,3,Round of 16
+CIV,Côte d'Ivoire,CAF,34,3,0,,3,Group stage
+COD,DR Congo,CAF,46,1,0,,0,Group stage
+CPV,Cape Verde,CAF,69,0,0,,0,Group stage
+EGY,Egypt,CAF,29,3,0,,0,Round of 16
+GHA,Ghana,CAF,74,4,0,,5,Quarter-finals
+MAR,Morocco,CAF,8,6,0,,6,Fourth
+RSA,South Africa,CAF,60,3,0,,2,Group stage
+SEN,Senegal,CAF,14,3,0,,5,Quarter-finals
+TUN,Tunisia,CAF,44,6,0,,3,Group stage
+NZL,New Zealand,OFC,85,2,0,,0,Group stage
+AUT,Austria,UEFA,24,7,0,,12,Third
+BEL,Belgium,UEFA,9,14,0,,22,Third
+BIH,Bosnia and Herzegovina,UEFA,65,1,0,,1,Group stage
+CRO,Croatia,UEFA,11,6,0,,17,Runner-up
+CZE,Czech Republic,UEFA,41,9,0,,12,Runner-up
+ENG,England,UEFA,4,16,1,1966,33,Champion
+ESP,Spain,UEFA,2,16,1,2010,32,Champion
+FRA,France,UEFA,1,16,2,2018,41,Champion
+GER,Germany,UEFA,10,20,4,2014,72,Champion
+NED,Netherlands,UEFA,7,11,0,,31,Runner-up
+NOR,Norway,UEFA,31,3,0,,2,Round of 16
+POR,Portugal,UEFA,5,8,0,,17,Third
+SCO,Scotland,UEFA,43,8,0,,4,Group stage
+SUI,Switzerland,UEFA,19,12,0,,14,Quarter-finals
+SWE,Sweden,UEFA,38,12,0,,20,Runner-up
+TUR,Turkey,UEFA,22,2,0,,5,Third
