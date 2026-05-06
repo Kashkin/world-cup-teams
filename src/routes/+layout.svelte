@@ -1,6 +1,5 @@
 <script lang="ts">
   import './layout.css';
-  import favicon from '$lib/assets/favicon.svg';
 
   let { children } = $props();
 
@@ -22,9 +21,16 @@
 <svelte:head>
   <title>{PAGE_TITLE}</title>
   <meta name="description" content={PAGE_DESCRIPTION} />
-  <link rel="icon" href={favicon} />
   <link rel="canonical" href={SITE_URL} />
-  <meta name="theme-color" content="#2d1b3d" />
+
+  <!-- Favicons + PWA manifest. theme-color matches site.webmanifest. -->
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="WC - My teams" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#c1161c" />
 
   <!-- Open Graph (Facebook, iMessage, Slack, LinkedIn) -->
   <meta property="og:type" content="website" />
