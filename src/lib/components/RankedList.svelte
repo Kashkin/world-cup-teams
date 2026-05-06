@@ -8,8 +8,8 @@
   import X from '@lucide/svelte/icons/x';
   import Trash2 from '@lucide/svelte/icons/trash-2';
   import Trophy from '@lucide/svelte/icons/trophy';
-  import Volleyball from '@lucide/svelte/icons/volleyball';
   import Quote from '@lucide/svelte/icons/quote';
+  import SoccerBall from './SoccerBall.svelte';
 
   interface Props {
     ranking: readonly string[];
@@ -150,6 +150,6 @@
     <p class="text-foreground/90 flex-1 text-sm leading-relaxed italic">
       The World Cup is more than a tournament.<br />It's where legends are made.
     </p>
-    <Volleyball class="text-primary/40 size-12 shrink-0" strokeWidth={1.5} />
+    <SoccerBall class="text-primary/40 size-12 shrink-0" />
   </aside>
 </section>
