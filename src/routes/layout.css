@@ -2,80 +2,81 @@
 @import 'tw-animate-css';
 @import 'shadcn-svelte/tailwind.css';
 @import '@fontsource-variable/inter';
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
+/* Dark, sports-mag aesthetic — applied at :root so the page is always dark.
+   Deep navy field, magenta primary accent, vivid confederation badges. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --background: oklch(0.18 0.05 263);
+  --foreground: oklch(0.98 0.01 263);
+  --card: oklch(0.225 0.045 263);
+  --card-foreground: oklch(0.98 0.01 263);
+  --popover: oklch(0.225 0.045 263);
+  --popover-foreground: oklch(0.98 0.01 263);
+  --primary: oklch(0.65 0.22 15);
+  --primary-foreground: oklch(0.98 0.01 263);
+  --secondary: oklch(0.27 0.05 263);
+  --secondary-foreground: oklch(0.98 0.01 263);
+  --muted: oklch(0.27 0.04 263);
+  --muted-foreground: oklch(0.7 0.03 263);
+  --accent: oklch(0.27 0.05 263);
+  --accent-foreground: oklch(0.98 0.01 263);
+  --destructive: oklch(0.65 0.22 15);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.65 0.22 15);
+
+  /* Confederation accent colours — used for the badge text in TeamCard. */
+  --conf-uefa: oklch(0.7 0.18 245);
+  --conf-conmebol: oklch(0.78 0.2 145);
+  --conf-caf: oklch(0.84 0.17 75);
+  --conf-concacaf: oklch(0.7 0.22 305);
+  --conf-afc: oklch(0.72 0.21 25);
+  --conf-ofc: oklch(0.78 0.15 200);
+
+  /* Quote card — deep maroon background. */
+  --quote-bg: oklch(0.27 0.12 18);
+
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Same as :root — page is always dark; .dark exists only so shadcn variants resolve. */
+  --background: oklch(0.18 0.05 263);
+  --foreground: oklch(0.98 0.01 263);
+  --card: oklch(0.225 0.045 263);
+  --card-foreground: oklch(0.98 0.01 263);
+  --popover: oklch(0.225 0.045 263);
+  --popover-foreground: oklch(0.98 0.01 263);
+  --primary: oklch(0.65 0.22 15);
+  --primary-foreground: oklch(0.98 0.01 263);
+  --secondary: oklch(0.27 0.05 263);
+  --secondary-foreground: oklch(0.98 0.01 263);
+  --muted: oklch(0.27 0.04 263);
+  --muted-foreground: oklch(0.7 0.03 263);
+  --accent: oklch(0.27 0.05 263);
+  --accent-foreground: oklch(0.98 0.01 263);
+  --destructive: oklch(0.65 0.22 15);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.65 0.22 15);
 }
 
 @theme inline {
   --font-sans: 'Inter Variable', sans-serif;
+  --font-display: 'Bebas Neue', 'Inter Variable', sans-serif;
+  --font-marker: 'Permanent Marker', 'Bebas Neue', sans-serif;
+
+  --color-conf-uefa: var(--conf-uefa);
+  --color-conf-conmebol: var(--conf-conmebol);
+  --color-conf-caf: var(--conf-caf);
+  --color-conf-concacaf: var(--conf-concacaf);
+  --color-conf-afc: var(--conf-afc);
+  --color-conf-ofc: var(--conf-ofc);
+  --color-quote: var(--quote-bg);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -122,9 +123,18 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(
+        ellipse 600px 400px at 75% -10%,
+        oklch(0.35 0.12 250 / 0.45),
+        transparent 70%
+      ),
+      radial-gradient(ellipse 400px 300px at 95% 5%, oklch(0.55 0.2 25 / 0.25), transparent 70%);
+    background-attachment: fixed;
   }
   html {
     @apply font-sans;
+    color-scheme: dark;
   }
 }
 
@@ -140,7 +150,6 @@
     max-width: none !important;
     padding: 0 !important;
   }
-  /* Single column on print regardless of viewport. */
   main > div {
     display: block !important;
   }
