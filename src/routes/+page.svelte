@@ -13,101 +13,127 @@
 
   const ranking = new PersistedState<string[]>('wc26.ranking', []);
 
+  // Source of truth for what's rendered. Always equals saved list, except
+  // while previewing a shared URL that differs from the saved list.
   let displayed = $state<string[]>([]);
   let previewMode = $state(false);
   let copiedAt = $state(0);
   let booted = $state(false);
 
-  $effect(() => {
-    if (booted && !previewMode) {
-      const next = [...ranking.current];
-      console.log('[mirror-effect]', { next, prevDisplayed: [...displayed] });
-      displayed = next;
-      syncUrl(next);
-    }
-  });
+  // No reactive mirror effect: nesting runed's proxy inside Svelte's $state
+  // led to either subtle render-staleness or a self-perpetuating loop, depending
+  // on which reads got tracked. Every state-changing path here calls commit()
+  // (or its equivalent) explicitly.
 
-  // Mirror displayed → URL hash. Uses SvelteKit's replaceState (not raw
-  // history.replaceState) — SvelteKit's dev-mode router patches the raw call
-  // and silently drops updates, breaking shared-URL persistence. Passing {}
-  // for state because we don't use SvelteKit's shallow routing.
+  // Updates URL via SvelteKit's replaceState. Falls back to the raw history
+  // API if SvelteKit's router isn't initialized yet — happens during the very
+  // first boot tick, where SvelteKit throws "before router is initialized" in
+  // dev. After init, SvelteKit's replaceState is preferred so it cooperates
+  // with the client router.
   function syncUrl(list: readonly string[]) {
     if (!booted) return;
     const encoded = encodeRanking(list);
     const next = encoded ? `#r=${encoded}` : '';
-    if (location.hash !== next) {
-      // Hash-only same-page update — resolve() isn't meaningful here because
-      // path + search are reused verbatim from the current URL.
+    if (location.hash === next) return;
+    const target = `${location.pathname}${location.search}${next}`;
+    try {
       // eslint-disable-next-line svelte/no-navigation-without-resolve
-      replaceState(`${location.pathname}${location.search}${next}`, {});
+      replaceState(target, {});
+    } catch {
+      window.history.replaceState({}, '', target);
     }
   }
 
-  // Decide what to show based on the current URL hash + saved list. Re-run on
-  // every hashchange — SvelteKit's client router treats same-path different-hash
-  // as a same-page navigation, so onMount alone misses URL changes after first
-  // mount (e.g. user pastes a different shared URL into the address bar).
+  // Decide what to show based on URL hash + saved list. Runs on first mount
+  // AND on every hashchange — SvelteKit's client router treats same-path
+  // different-hash as a same-page navigation, so onMount alone misses URL
+  // changes after first mount.
   function bootFromHash() {
     const incoming = location.hash.startsWith('#r=') ? decodeRanking(location.hash.slice(3)) : [];
     const saved = [...ranking.current];
     const sameAsSaved =
       incoming.length === saved.length && incoming.every((c, i) => c === saved[i]);
 
-    console.log('[bootFromHash]', { hash: location.hash, incoming, saved, sameAsSaved });
-
     if (incoming.length === 0 || sameAsSaved) {
       displayed = saved;
       previewMode = false;
+      syncUrl(saved);
     } else if (saved.length === 0) {
       ranking.current = incoming;
       displayed = incoming;
       previewMode = false;
+      syncUrl(incoming);
     } else {
       displayed = incoming;
       previewMode = true;
+      syncUrl(incoming);
     }
-    console.log('[bootFromHash] post', { displayed: [...displayed], previewMode });
   }
 
+  // Display fonts (Bebas Neue + Permanent Marker) are preloaded in +layout.svelte
+  // but the hero is hidden until they're confirmed loaded — otherwise the system
+  // fallback briefly renders at the same large size and looks ungainly. We also
+  // cap the wait at 600ms so a slow connection still gets the hero (just in fallback).
+  let fontsReady = $state(false);
+
   onMount(() => {
-    bootFromHash();
     booted = true;
-    syncUrl(displayed);
+    bootFromHash();
     const onHash = () => bootFromHash();
     window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
+
+    let cancelled = false;
+    const timeout = setTimeout(() => {
+      if (!cancelled) fontsReady = true;
+    }, 600);
+    Promise.all([
+      document.fonts.load('1em "Bebas Neue"'),
+      document.fonts.load('1em "Permanent Marker"'),
+    ])
+      .then(() => {
+        if (cancelled) return;
+        clearTimeout(timeout);
+        fontsReady = true;
+      })
+      .catch(() => {
+        // document.fonts.load can reject on Firefox quirks; fall back to timeout.
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+      window.removeEventListener('hashchange', onHash);
+    };
   });
 
   let unrankedTeams = $derived(teams.filter((t) => !displayed.includes(t.code)));
 
-  // In preview mode, edit the previewed list (held in `displayed`). Outside
-  // preview, edit `ranking.current` directly — reading `displayed` would be
-  // stale on rapid clicks because the mirror effect hasn't propagated yet.
-  function currentList(): readonly string[] {
-    return previewMode ? displayed : [...ranking.current];
-  }
-  function add(code: string) {
-    const next = [...currentList(), code];
-    previewMode = false;
+  // Single point of state change for user actions: persist, render, sync URL,
+  // exit preview. Everything else (add/remove/reorder/save/reset) goes through this.
+  function commit(next: string[]) {
     ranking.current = next;
-  }
-  function remove(code: string) {
-    const next = currentList().filter((c) => c !== code);
+    displayed = next;
     previewMode = false;
-    ranking.current = next;
-  }
-  function reorder(next: string[]) {
-    previewMode = false;
-    ranking.current = next;
+    syncUrl(next);
   }
 
+  function add(code: string) {
+    commit([...displayed, code]);
+  }
+  function remove(code: string) {
+    commit(displayed.filter((c) => c !== code));
+  }
+  function reorder(next: string[]) {
+    commit(next);
+  }
   function saveAsMine() {
-    ranking.current = [...displayed];
-    previewMode = false;
+    commit([...displayed]);
   }
   function restoreMine() {
-    displayed = [...ranking.current];
+    const restored = [...ranking.current];
+    displayed = restored;
     previewMode = false;
+    syncUrl(restored);
   }
 
   async function share() {
@@ -120,8 +146,7 @@
 
   function confirmReset() {
     if (confirm('Clear your teams?')) {
-      ranking.current = [];
-      previewMode = false;
+      commit([]);
     }
   }
 
@@ -135,7 +160,10 @@
   <header class="relative overflow-visible">
     <div class="flex flex-col items-start gap-6 lg:flex-row lg:gap-16">
       <div class="relative z-10 pt-8 sm:pt-12 shrink-0">
-        <h1 class="font-display text-6xl leading-none tracking-wide sm:text-7xl md:text-8xl">
+        <h1
+          class="font-display text-6xl leading-none tracking-wide transition-opacity duration-200 sm:text-7xl md:text-8xl"
+          class:opacity-0={!fontsReady}
+        >
           <span class="block text-foreground drop-shadow-[0_2px_0_oklch(0.4_0.18_260)]">
             WORLD CUP <span class="tabular-nums">2026</span>
           </span>

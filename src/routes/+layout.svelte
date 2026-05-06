@@ -1,5 +1,10 @@
 <script lang="ts">
   import './layout.css';
+  // Hash-fingerprinted asset URLs for the two display fonts. Importing as ?url
+  // gives us the post-build path, which lets us preload them — saves the
+  // CSS-waterfall delay before the browser even sees the woff2 references.
+  import bebasNeueWoff2 from '@fontsource/bebas-neue/files/bebas-neue-latin-400-normal.woff2?url';
+  import permanentMarkerWoff2 from '@fontsource/permanent-marker/files/permanent-marker-latin-400-normal.woff2?url';
 
   let { children } = $props();
 
@@ -31,6 +36,16 @@
   <meta name="apple-mobile-web-app-title" content="WC - My teams" />
   <link rel="manifest" href="/site.webmanifest" />
   <meta name="theme-color" content="#c1161c" />
+
+  <!-- Preload the display fonts so the hero doesn't flash in the system fallback. -->
+  <link rel="preload" href={bebasNeueWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
+  <link
+    rel="preload"
+    href={permanentMarkerWoff2}
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  />
 
   <!-- Open Graph (Facebook, iMessage, Slack, LinkedIn) -->
   <meta property="og:type" content="website" />
