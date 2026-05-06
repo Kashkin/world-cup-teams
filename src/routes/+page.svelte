@@ -20,8 +20,10 @@
 
   $effect(() => {
     if (booted && !previewMode) {
-      displayed = ranking.current;
-      syncUrl(ranking.current);
+      const next = [...ranking.current];
+      console.log('[mirror-effect]', { next, prevDisplayed: [...displayed] });
+      displayed = next;
+      syncUrl(next);
     }
   });
 
@@ -47,9 +49,11 @@
   // mount (e.g. user pastes a different shared URL into the address bar).
   function bootFromHash() {
     const incoming = location.hash.startsWith('#r=') ? decodeRanking(location.hash.slice(3)) : [];
-    const saved = ranking.current;
+    const saved = [...ranking.current];
     const sameAsSaved =
       incoming.length === saved.length && incoming.every((c, i) => c === saved[i]);
+
+    console.log('[bootFromHash]', { hash: location.hash, incoming, saved, sameAsSaved });
 
     if (incoming.length === 0 || sameAsSaved) {
       displayed = saved;
@@ -62,6 +66,7 @@
       displayed = incoming;
       previewMode = true;
     }
+    console.log('[bootFromHash] post', { displayed: [...displayed], previewMode });
   }
 
   onMount(() => {
@@ -75,13 +80,21 @@
 
   let unrankedTeams = $derived(teams.filter((t) => !displayed.includes(t.code)));
 
+  // In preview mode, edit the previewed list (held in `displayed`). Outside
+  // preview, edit `ranking.current` directly — reading `displayed` would be
+  // stale on rapid clicks because the mirror effect hasn't propagated yet.
+  function currentList(): readonly string[] {
+    return previewMode ? displayed : [...ranking.current];
+  }
   function add(code: string) {
+    const next = [...currentList(), code];
     previewMode = false;
-    ranking.current = [...displayed, code];
+    ranking.current = next;
   }
   function remove(code: string) {
+    const next = currentList().filter((c) => c !== code);
     previewMode = false;
-    ranking.current = displayed.filter((c) => c !== code);
+    ranking.current = next;
   }
   function reorder(next: string[]) {
     previewMode = false;
@@ -89,11 +102,11 @@
   }
 
   function saveAsMine() {
-    ranking.current = displayed;
+    ranking.current = [...displayed];
     previewMode = false;
   }
   function restoreMine() {
-    displayed = ranking.current;
+    displayed = [...ranking.current];
     previewMode = false;
   }
 

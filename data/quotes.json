@@ -1,26 +1,57 @@
 [
   {
-    "text": "The World Cup is more than a tournament. It's where legends are made.",
-    "author": null
+    "text": "I don't feel pressure. I don't give a toss about it. I spent the afternoon of Sunday, July 9, 2006 in Berlin sleeping and playing the PlayStation. In the evening, I went out and won the World Cup.",
+    "person": "Andrea Pirlo",
+    "role": "Italian midfielder"
+  },
+  {
+    "text": "A little with the head of Maradona, and a little with the hand of God.",
+    "person": "Diego Maradona",
+    "role": "Argentinian captain;"
+  },
+  {
+    "text": "What hand of God? It was the hand of Diego.",
+    "person": "Diego Maradona",
+    "role": "Argentinian captain"
+  },
+  {
+    "text": "I offer a thousand apologies to the English, really, but I would do it again once and a thousand times. I stole their wallet without them noticing it, without them blinking.",
+    "person": "Diego Maradona",
+    "role": "Argentinian captain"
+  },
+  {
+    "text": "Football is a simple game. Twenty-two men chase a ball for ninety minutes and at the end, the Germans always win.",
+    "person": "Gary Lineker",
+    "role": "English striker"
+  },
+  {
+    "text": "Mick, you're a liar. You're a fucking wanker. I didn't rate you as a player, I don't rate you as a manager, and I don't rate you as a person. You're a fucking wanker and you can stick your World Cup up your arse. I've got no respect for you. The only reason I have any dealings with you is that somehow you are the manager of my country. You can stick it up your bollocks.",
+    "person": "Roy Keane",
+    "role": "Irish captain"
+  },
+  {
+    "text": "I stood up and kicked a bucket of water. I was not happy. The players said, 'But Carlos, we are World Champions.' I said, 'Yes, but they scored twice from corners.'",
+    "person": "Carlos Bilardo",
+    "role": "Argentinian manager"
+  },
+  {
+    "text": "Our loss to Italy was not simple. People remember our team because we lost, not won. But nobody tried to copy Italy, the pragmatic team which lifted the World Cup. The beautiful team, with the art and creativity, lost.",
+    "person": "Sócrates",
+    "role": "Brazilian captain"
+  },
+  {
+    "text": "Everywhere has its irremediable national catastrophe, something like a Hiroshima. Our catastrophe, our Hiroshima, was the defeat by Uruguay in 1950.",
+    "person": "Nelson Rodrigues",
+    "role": "Brazilian playwright and journalist"
   },
   {
     "text": "Some people believe football is a matter of life and death. I assure you, it's much more serious than that.",
-    "author": "Bill Shankly (placeholder)"
-  },
-  {
-    "text": "When the World Cup begins, the world stops. For one month, only the ball matters.",
-    "author": null
+    "person": "Bill Shankly",
+    "role": "English manager"
   },
   {
     "text": "Football is the ballet of the masses.",
-    "author": "Dmitri Shostakovich (placeholder)"
-  },
-  {
-    "text": "Every four years, hope wears a different shirt.",
-    "author": null
-  },
-  {
-    "text": "The greatest joy of football is sharing it with someone else.",
-    "author": null
+    "person": "Dmitri Shostakovich",
+    "role": "Russian composer"
   }
 ]

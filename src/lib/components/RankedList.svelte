@@ -42,11 +42,15 @@
     onReorder(items.map((i) => i.id));
   }
 
-  // Quote rotates on every page load. Server-prerendered with the first one (so the
-  // static HTML has something), then onMount swaps in a random pick on the client.
+  // Quote rotates on every page load. The aside is rendered with quotes[0] in the
+  // prerendered HTML to reserve layout space, but kept invisible (opacity-0) until
+  // onMount runs and assigns a random pick — so the user never sees the placeholder
+  // get swapped out on hydration.
   let quote = $state<QuoteData>(quotes[0]);
+  let quoteReady = $state(false);
   onMount(() => {
     quote = randomQuote();
+    quoteReady = true;
   });
 
   function move(i: number, delta: number) {
@@ -147,16 +151,19 @@
     </div>
   {/if}
 
-  <!-- Quote callout -->
+  <!-- Quote callout — invisible until the random pick lands on mount, see above. -->
   <aside
-    class="relative flex items-center gap-4 mt-auto overflow-hidden rounded-xl border border-white/8 p-5 print:hidden"
+    class="relative mt-auto flex items-center gap-4 overflow-hidden rounded-xl border border-white/8 p-5 transition-opacity duration-300 print:hidden"
+    class:opacity-0={!quoteReady}
     style="background-image: linear-gradient(135deg, oklch(0.27 0.12 18 / 0.2) 0%, oklch(0.22 0.08 18 / 0.5) 100%);"
   >
     <Quote class="text-primary size-5 shrink-0 self-start" fill="currentColor" />
     <div class="flex-1">
       <p class="text-foreground/90 text-sm leading-relaxed">{quote.text}</p>
-      {#if quote.author}
-        <p class="text-foreground/55 mt-1.5 text-xs">— {quote.author}</p>
+      {#if quote.person}
+        <p class="text-foreground/55 mt-1.5 text-xs">
+          — <strong>{quote.person}</strong>{quote.role ? `, ${quote.role}` : ''}
+        </p>
       {/if}
     </div>
     <SoccerBall class="text-primary-foreground/80 size-12 shrink-0" />

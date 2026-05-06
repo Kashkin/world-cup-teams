@@ -2,7 +2,8 @@ import quotesData from '../../data/quotes.json';
 
 export type Quote = {
   text: string;
-  author: string | null;
+  person: string;
+  role: string;
 };
 
 export const quotes: readonly Quote[] = Object.freeze(quotesData);
