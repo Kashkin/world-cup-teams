@@ -1,49 +1,49 @@
-code,name,confederation,appearances,trophies,lastTrophy,matchWins,bestFinish,review
-CAN,"Canada",CONCACAF,2,0,,19,"Group stage","matchWins likely inflated (WC + qualification combined)"
-CUW,"Curaçao",CONCACAF,0,0,,0,"Group stage","first-time qualifier — defaults applied"
-HAI,"Haiti",CONCACAF,1,0,,0,"Group stage",""
-MEX,"Mexico",CONCACAF,17,0,,17,"Quarter-finals",""
-PAN,"Panama",CONCACAF,1,0,,6,"Group stage","matchWins likely inflated (WC + qualification combined)"
-USA,"United States",CONCACAF,0,0,,0,"Group stage","PARSE_FAILED — please fill from Wikipedia"
-ARG,"Argentina",CONMEBOL,18,3,2022,85,"Champion","matchWins likely inflated (WC + qualification combined)"
-BRA,"Brazil",CONMEBOL,22,5,2002,76,"Champion",""
-COL,"Colombia",CONMEBOL,6,0,,9,"Quarter-finals",""
-ECU,"Ecuador",CONMEBOL,4,0,,5,"Round of 16",""
-PAR,"Paraguay",CONMEBOL,8,0,,7,"Quarter-finals",""
-URU,"Uruguay",CONMEBOL,14,2,1950,25,"Champion",""
-AUS,"Australia",AFC,0,0,,0,"Group stage","PARSE_FAILED — please fill from Wikipedia"
-IRN,"Iran",AFC,6,0,,63,"Group stage","matchWins likely inflated (WC + qualification combined)"
-IRQ,"Iraq",AFC,1,0,,5,"Group stage","matchWins likely inflated (WC + qualification combined)"
-JOR,"Jordan",AFC,0,0,,0,"Group stage","first-time qualifier — defaults applied"
-JPN,"Japan",AFC,6,0,,49,"Round of 16","matchWins likely inflated (WC + qualification combined)"
-KOR,"South Korea",AFC,11,0,,81,"Fourth","matchWins likely inflated (WC + qualification combined)"
-KSA,"Saudi Arabia",AFC,6,0,,61,"Round of 16","matchWins likely inflated (WC + qualification combined)"
-QAT,"Qatar",AFC,1,0,,7,"Group stage","matchWins likely inflated (WC + qualification combined)"
-UZB,"Uzbekistan",AFC,0,0,,0,"Group stage","first-time qualifier — defaults applied"
-ALG,"Algeria",CAF,0,0,,0,"Group stage",""
-CIV,"Côte d'Ivoire",CAF,3,0,,3,"Group stage",""
-COD,"DR Congo",CAF,1,0,,0,"Group stage",""
-CPV,"Cape Verde",CAF,0,0,,0,"Group stage","first-time qualifier — defaults applied"
-EGY,"Egypt",CAF,3,0,,0,"Round of 16",""
-GHA,"Ghana",CAF,4,0,,5,"Quarter-finals",""
-MAR,"Morocco",CAF,6,0,,32,"Fourth","matchWins likely inflated (WC + qualification combined)"
-RSA,"South Africa",CAF,3,0,,2,"Group stage",""
-SEN,"Senegal",CAF,3,0,,5,"Quarter-finals",""
-TUN,"Tunisia",CAF,6,0,,36,"Group stage","matchWins likely inflated (WC + qualification combined)"
-NZL,"New Zealand",OFC,2,0,,0,"Group stage",""
-AUT,"Austria",UEFA,7,0,,12,"Third",""
-BEL,"Belgium",UEFA,0,0,,0,"Group stage","PARSE_FAILED — please fill from Wikipedia"
-BIH,"Bosnia and Herzegovina",UEFA,1,0,,8,"Group stage","matchWins likely inflated (WC + qualification combined)"
-CRO,"Croatia",UEFA,6,0,,13,"Runner-up",""
-CZE,"Czech Republic",UEFA,9,0,,12,"Runner-up",""
-ENG,"England",UEFA,16,1,1966,22,"Champion",""
-ESP,"Spain",UEFA,16,1,2010,80,"Champion","matchWins likely inflated (WC + qualification combined)"
-FRA,"France",UEFA,0,0,,0,"Group stage","PARSE_FAILED — please fill from Wikipedia"
-GER,"Germany",UEFA,0,0,,0,"Group stage","PARSE_FAILED — please fill from Wikipedia"
-NED,"Netherlands",UEFA,0,0,,0,"Group stage","PARSE_FAILED — please fill from Wikipedia"
-NOR,"Norway",UEFA,3,0,,2,"Round of 16",""
-POR,"Portugal",UEFA,8,0,,17,"Third",""
-SCO,"Scotland",UEFA,8,0,,29,"Group stage",""
-SUI,"Switzerland",UEFA,12,0,,14,"Quarter-finals",""
-SWE,"Sweden",UEFA,11,0,,46,"Runner-up","matchWins likely inflated (WC + qualification combined)"
-TUR,"Turkey",UEFA,2,0,,9,"Third",""
+code,name,confederation,appearances,trophies,lastTrophy,matchWins,bestFinish
+CAN,Canada,CONCACAF,2,0,,0,Group stage
+CUW,Curaçao,CONCACAF,0,0,,0,Group stage
+HAI,Haiti,CONCACAF,1,0,,0,Group stage
+MEX,Mexico,CONCACAF,17,0,,17,Quarter-finals
+PAN,Panama,CONCACAF,1,0,,0,Group stage
+USA,United States,CONCACAF,11,0,,9,Group stage
+ARG,Argentina,CONMEBOL,18,3,2022,47,Champion
+BRA,Brazil,CONMEBOL,22,5,2002,76,Champion
+COL,Colombia,CONMEBOL,6,0,,9,Quarter-finals
+ECU,Ecuador,CONMEBOL,4,0,,5,Round of 16
+PAR,Paraguay,CONMEBOL,8,0,,7,Quarter-finals
+URU,Uruguay,CONMEBOL,14,2,1950,25,Champion
+AUS,Australia,AFC,6,0,,4,Round of 16
+IRN,Iran,AFC,6,0,,3,Group stage
+IRQ,Iraq,AFC,1,0,,0,Group stage
+JOR,Jordan,AFC,0,0,,0,Group stage
+JPN,Japan,AFC,7,0,,7,Round of 16
+KOR,South Korea,AFC,11,0,,7,Fourth
+KSA,Saudi Arabia,AFC,6,0,,4,Round of 16
+QAT,Qatar,AFC,1,0,,0,Group stage
+UZB,Uzbekistan,AFC,0,0,,0,Group stage
+ALG,Algeria,CAF,4,0,,3,Round of 16
+CIV,Côte d'Ivoire,CAF,3,0,,3,Group stage
+COD,DR Congo,CAF,1,0,,0,Group stage
+CPV,Cape Verde,CAF,0,0,,0,Group stage
+EGY,Egypt,CAF,3,0,,0,Round of 16
+GHA,Ghana,CAF,4,0,,5,Quarter-finals
+MAR,Morocco,CAF,6,0,,5,Fourth
+RSA,South Africa,CAF,3,0,,2,Group stage
+SEN,Senegal,CAF,3,0,,5,Quarter-finals
+TUN,Tunisia,CAF,6,0,,3,Group stage
+NZL,New Zealand,OFC,2,0,,0,Group stage
+AUT,Austria,UEFA,7,0,,12,Third
+BEL,Belgium,UEFA,14,0,,21,Third
+BIH,Bosnia and Herzegovina,UEFA,1,0,,1,Group stage
+CRO,Croatia,UEFA,6,0,,13,Runner-up
+CZE,Czech Republic,UEFA,9,0,,12,Runner-up
+ENG,England,UEFA,16,1,1966,22,Champion
+ESP,Spain,UEFA,16,1,2010,31,Champion
+FRA,France,UEFA,16,2,2018,39,Champion
+GER,Germany,UEFA,20,4,2014,68,Champion
+NED,Netherlands,UEFA,11,0,,30,Runner-up
+NOR,Norway,UEFA,3,0,,2,Round of 16
+POR,Portugal,UEFA,8,0,,17,Third
+SCO,Scotland,UEFA,8,0,,4,Group stage
+SUI,Switzerland,UEFA,12,0,,14,Quarter-finals
+SWE,Sweden,UEFA,11,0,,19,Runner-up
+TUR,Turkey,UEFA,2,0,,9,Third
