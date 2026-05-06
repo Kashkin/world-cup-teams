@@ -1,238 +1,164 @@
-import wtf from 'wtf_wikipedia';
-import type { BestFinish } from '../src/lib/types.ts';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { z } from 'zod';
+import { TeamSchema, type Team } from '../src/lib/types.ts';
 import { WC2026_TEAMS, type Wc2026Entry } from './teams-2026.ts';
 
 const UA = 'world-cup-2026-research/0.1 (nick.rogers@portable.com.au)';
 
-const ROUND_TO_FINISH: Record<string, BestFinish> = {
-  champions: 'Champion',
-  'runners-up': 'Runner-up',
-  'third place': 'Third',
-  'fourth place': 'Fourth',
-  'quarter-finals': 'Quarter-finals',
-  'round of 16': 'Round of 16',
-  // historical aliases
-  'second round': 'Round of 16',
-  'second group stage': 'Round of 16',
-  'first round': 'Group stage',
-  'group stage': 'Group stage',
-};
-
-const FINISH_RANK: Record<BestFinish, number> = {
-  Champion: 1,
-  'Runner-up': 2,
-  Third: 3,
-  Fourth: 4,
-  'Quarter-finals': 5,
-  'Round of 16': 6,
-  'Group stage': 7,
-};
-
-type Historical = {
-  appearances: number;
-  trophies: number;
-  lastTrophy: number | null;
-  matchWins: number;
-  bestFinish: BestFinish;
-};
-
-async function fetchWikitext(slug: string): Promise<string | null> {
-  const url = `https://en.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(slug)}&format=json&prop=wikitext&redirects=1`;
-  const res = await fetch(url, { headers: { 'user-agent': UA } });
-  if (!res.ok) return null;
-  const json = (await res.json()) as { parse?: { wikitext: { '*': string } } };
-  return json.parse?.wikitext['*'] ?? null;
-}
-
-function cellText(cell: unknown): string {
-  if (cell == null) return '';
-  if (typeof cell === 'string') return cell;
-  if (typeof cell === 'object' && 'text' in cell) {
-    return String((cell as { text: unknown }).text ?? '');
-  }
-  return '';
-}
-
-// Pick the table key matching any of the candidates (case-insensitive).
-function pickKey(keys: string[], candidates: string[]): string | undefined {
-  const lower = candidates.map((c) => c.toLowerCase());
-  return keys.find((k) => lower.includes(k.toLowerCase()));
-}
-
-function parseHistorical(wikitext: string): Historical {
-  const doc = wtf(wikitext);
-  const tables = doc.tables();
-
-  // Find the results-by-tournament table. Header names vary across team pages:
-  //   Round / Result / Position
-  //   W / Won
-  // We require a Year column plus at least one of Round/Result and a wins column.
-  let pickedKeys: { year: string; round: string; wins: string } | undefined;
-  const table = tables.find((t) => {
-    const rows = t.json() as Array<Record<string, unknown>>;
-    if (!rows.length) return false;
-    const keys = Object.keys(rows[0]);
-    const year = pickKey(keys, ['Year']);
-    const round = pickKey(keys, ['Round', 'Result']);
-    const wins = pickKey(keys, ['W', 'Won']);
-    if (year && round && wins) {
-      pickedKeys = { year, round, wins };
-      return true;
+// Minimal CSV parser. Handles quoted fields, escaped quotes, and unquoted fields.
+function parseCsvLine(line: string): string[] {
+  const out: string[] = [];
+  let cur = '';
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (inQuote) {
+      if (c === '"' && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else if (c === '"') {
+        inQuote = false;
+      } else {
+        cur += c;
+      }
+    } else if (c === '"') {
+      inQuote = true;
+    } else if (c === ',') {
+      out.push(cur);
+      cur = '';
+    } else {
+      cur += c;
     }
-    return false;
-  });
-
-  if (!table || !pickedKeys) {
-    throw new Error('results-by-tournament table not found');
   }
-  const KEY_YEAR = pickedKeys.year;
-  const KEY_ROUND = pickedKeys.round;
-  const KEY_WINS = pickedKeys.wins;
-
-  const rows = table.json() as Array<Record<string, unknown>>;
-  const parsed = rows.map((r) => {
-    const yearText = cellText(r[KEY_YEAR]);
-    const yearMatch = yearText.match(/(\d{4})/);
-    const roundRaw = cellText(r[KEY_ROUND]).replace(/'''/g, '').trim();
-    const round = roundRaw.toLowerCase();
-    const winsText = cellText(r[KEY_WINS]).trim();
-    const wins = parseInt(winsText, 10);
-    return {
-      year: yearMatch ? parseInt(yearMatch[1], 10) : NaN,
-      yearText: yearText.toLowerCase(),
-      round,
-      wins: Number.isFinite(wins) ? wins : 0,
-    };
-  });
-
-  // Only count tournaments the team actually played: valid past year + recognised round.
-  // Filters out future tournaments (Qualified / To be determined), DNQ rows, and non-rounds.
-  // Wikipedia's W column is sometimes blank for trophy rows (e.g. England 1966) — we don't
-  // gate on it, so trophies/finish are still recognised; missing wins just contribute 0.
-  const yearRows = parsed.filter(
-    (r) => Number.isFinite(r.year) && r.year < 2026 && Object.hasOwn(ROUND_TO_FINISH, r.round),
-  );
-
-  // Sum per-row wins. Some teams' tables have a "Total" row that combines WC + qualification
-  // wins (e.g. Canada's combined table) — those are unsafe to read as the WC-only total.
-  // The trade-off: a few teams undercount by 1-3 (e.g. England, where the 1966 Champions row
-  // has a blank W cell due to rowspan markup).
-  const matchWins = yearRows.reduce((sum, r) => sum + r.wins, 0);
-
-  const champYears = yearRows.filter((r) => r.round === 'champions').map((r) => r.year);
-  const finishes = yearRows.map((r) => ROUND_TO_FINISH[r.round] ?? 'Group stage');
-  const bestFinish = finishes.reduce<BestFinish>(
-    (best, f) => (FINISH_RANK[f] < FINISH_RANK[best] ? f : best),
-    'Group stage',
-  );
-
-  return {
-    appearances: yearRows.length,
-    trophies: champYears.length,
-    lastTrophy: champYears.length ? Math.max(...champYears) : null,
-    matchWins,
-    bestFinish,
-  };
+  out.push(cur);
+  return out;
 }
 
-const NO_HISTORY: Historical = {
-  appearances: 0,
-  trophies: 0,
-  lastTrophy: null,
-  matchWins: 0,
-  bestFinish: 'Group stage',
-};
+const CsvRowSchema = z.object({
+  code: z.string().length(3),
+  name: z.string().min(1),
+  confederation: z.enum(['AFC', 'CAF', 'CONCACAF', 'CONMEBOL', 'OFC', 'UEFA']),
+  appearances: z.coerce.number().int().nonnegative(),
+  trophies: z.coerce.number().int().nonnegative(),
+  lastTrophy: z
+    .union([z.literal(''), z.coerce.number().int().min(1930).max(2026)])
+    .transform((v) => (v === '' ? null : v)),
+  matchWins: z.coerce.number().int().nonnegative(),
+  bestFinish: z.enum([
+    'Champion',
+    'Runner-up',
+    'Third',
+    'Fourth',
+    'Quarter-finals',
+    'Round of 16',
+    'Group stage',
+  ]),
+});
 
-async function parseOne(entry: Wc2026Entry): Promise<Historical> {
-  if (!entry.wpHistory) return NO_HISTORY;
-  const wt = await fetchWikitext(entry.wpHistory);
-  if (!wt) {
-    console.warn(`  [${entry.code}] no wikitext at ${entry.wpHistory}`);
-    return NO_HISTORY;
+async function readTeamsCsv(): Promise<Map<string, z.infer<typeof CsvRowSchema>>> {
+  const text = await readFile('data/teams.csv', 'utf8');
+  const lines = text.split('\n').filter(Boolean);
+  const [headerLine, ...dataLines] = lines;
+  const headers = parseCsvLine(headerLine);
+  const out = new Map<string, z.infer<typeof CsvRowSchema>>();
+  for (const line of dataLines) {
+    const cells = parseCsvLine(line);
+    const obj: Record<string, string> = {};
+    headers.forEach((h, i) => (obj[h] = cells[i] ?? ''));
+    const parsed = CsvRowSchema.parse(obj);
+    out.set(parsed.code, parsed);
   }
-  try {
-    return parseHistorical(wt);
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.warn(`  [${entry.code}] parse error: ${msg}`);
-    return NO_HISTORY;
-  }
+  return out;
+}
+
+async function flagSvgUrl(flagFile: string): Promise<string> {
+  const url = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(flagFile)}&prop=imageinfo&iiprop=url&format=json`;
+  const res = await fetch(url, { headers: { 'user-agent': UA } });
+  if (!res.ok) throw new Error(`flag URL lookup failed for ${flagFile}: ${res.status}`);
+  const json = (await res.json()) as {
+    query?: { pages?: Record<string, { imageinfo?: Array<{ url?: string }> }> };
+  };
+  const pages = json.query?.pages ?? {};
+  const page = Object.values(pages)[0];
+  const direct = page?.imageinfo?.[0]?.url;
+  if (!direct) throw new Error(`no imageinfo URL for ${flagFile}`);
+  return direct;
+}
+
+async function downloadFlag(entry: Wc2026Entry): Promise<void> {
+  const url = await flagSvgUrl(entry.flagFile);
+  const res = await fetch(url, { headers: { 'user-agent': UA } });
+  if (!res.ok) throw new Error(`flag fetch failed for ${entry.code}: ${res.status}`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  await mkdir('static/flags', { recursive: true });
+  await writeFile(`static/flags/${entry.code.toLowerCase()}.svg`, buf);
 }
 
 async function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-// Flag teams whose parsed output is known suspect — the user reviews and corrects these
-// in data/teams.csv before we proceed to JSON emit.
-const PARSE_FAILURES = new Set(['USA', 'AUS', 'BEL', 'FRA', 'GER', 'NED']);
-const INFLATED_WINS_SUSPECTED = new Set([
-  'ARG',
-  'IRN',
-  'JPN',
-  'KOR',
-  'KSA',
-  'MAR',
-  'TUN',
-  'BIH',
-  'ESP',
-  'SWE',
-  'CAN',
-  'PAN',
-  'IRQ',
-  'QAT',
-]);
-
 async function main() {
-  const { writeFile, mkdir } = await import('node:fs/promises');
-  const historicalByCode = new Map<string, Historical>();
+  console.log('Reading data/teams.csv…');
+  const csv = await readTeamsCsv();
+  if (csv.size !== 48) throw new Error(`expected 48 rows, got ${csv.size}`);
+
+  console.log('Downloading flags…');
   for (const entry of WC2026_TEAMS) {
-    process.stdout.write(`  ${entry.code} ${entry.name.padEnd(24)} `);
-    const h = await parseOne(entry);
-    historicalByCode.set(entry.code, h);
-    console.log(
-      `apps=${String(h.appearances).padStart(2)} trophies=${h.trophies} wins=${String(h.matchWins).padStart(3)} best=${h.bestFinish}`,
-    );
+    process.stdout.write(`  ${entry.code} ${entry.flagFile} `);
+    try {
+      await downloadFlag(entry);
+      console.log('✓');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.log(`✗ ${msg}`);
+    }
     await sleep(200);
   }
 
-  // Write CSV for user review.
-  const csvHeader = [
-    'code',
-    'name',
-    'confederation',
-    'appearances',
-    'trophies',
-    'lastTrophy',
-    'matchWins',
-    'bestFinish',
-    'review',
-  ].join(',');
-  const csvRows = WC2026_TEAMS.map((t) => {
-    const h = historicalByCode.get(t.code)!;
-    let review = '';
-    if (PARSE_FAILURES.has(t.code)) review = 'PARSE_FAILED — please fill from Wikipedia';
-    else if (INFLATED_WINS_SUSPECTED.has(t.code))
-      review = 'matchWins likely inflated (WC + qualification combined)';
-    else if (!t.wpHistory) review = 'first-time qualifier — defaults applied';
-    return [
-      t.code,
-      JSON.stringify(t.name),
-      t.confederation,
-      h.appearances,
-      h.trophies,
-      h.lastTrophy ?? '',
-      h.matchWins,
-      JSON.stringify(h.bestFinish),
-      JSON.stringify(review),
-    ].join(',');
+  console.log('Assembling teams.json…');
+  const teams: Team[] = WC2026_TEAMS.map((entry) => {
+    const row = csv.get(entry.code);
+    if (!row) throw new Error(`no CSV row for ${entry.code}`);
+    return {
+      code: entry.code,
+      name: entry.name,
+      confederation: entry.confederation,
+      flag: `/flags/${entry.code.toLowerCase()}.svg`,
+      ranking: null, // TODO: pull from FIFA's monthly ranking when we wire it up
+      appearances: row.appearances,
+      trophies: row.trophies,
+      lastTrophy: row.lastTrophy,
+      matchWins: row.matchWins,
+      bestFinish: row.bestFinish,
+    };
   });
-  await mkdir('data', { recursive: true });
-  await writeFile('data/teams.csv', [csvHeader, ...csvRows].join('\n') + '\n');
 
-  console.log(`\nWrote data/teams.csv (${WC2026_TEAMS.length} rows).`);
-  console.log(`  ${PARSE_FAILURES.size} teams need full historical fill (review="PARSE_FAILED").`);
-  console.log(`  ${INFLATED_WINS_SUSPECTED.size} teams have suspected inflated matchWins.`);
+  const validated = z.array(TeamSchema).length(48).parse(teams);
+  // Sort: by ranking ascending (null last), then by name.
+  const sorted = [...validated].sort((a, b) => {
+    if (a.ranking == null && b.ranking == null) return a.name.localeCompare(b.name);
+    if (a.ranking == null) return 1;
+    if (b.ranking == null) return -1;
+    return a.ranking - b.ranking;
+  });
+
+  await mkdir('data', { recursive: true });
+  await writeFile('data/teams.json', JSON.stringify(sorted, null, 2) + '\n');
+
+  console.log(`\nWrote data/teams.json (${sorted.length} teams).`);
+  console.log(
+    `  Champions: ${sorted
+      .filter((t) => t.trophies > 0)
+      .map((t) => t.code)
+      .join(', ')}`,
+  );
+  console.log(
+    `  First-time qualifiers: ${sorted
+      .filter((t) => t.appearances === 0)
+      .map((t) => t.code)
+      .join(', ')}`,
+  );
 }
 
 main().catch((e: unknown) => {
