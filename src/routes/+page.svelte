@@ -16,14 +16,19 @@
   let displayed = $state<string[]>([]);
   let previewMode = $state(false);
   let copiedAt = $state(0);
+  // booted gates the reactive URL/displayed-mirror effects until after onMount has
+  // had a chance to read the original URL hash. Without this, the URL-mirror effect
+  // overwrites the incoming #r=... before we can read it.
+  let booted = $state(false);
 
   // Outside preview mode, displayed mirrors storage.
   $effect(() => {
-    if (!previewMode) displayed = ranking.current;
+    if (booted && !previewMode) displayed = ranking.current;
   });
 
   // Mirror displayed → URL hash so the address bar always reflects what's on screen.
   $effect(() => {
+    if (!booted) return;
     const encoded = encodeRanking(displayed);
     const next = encoded ? `#r=${encoded}` : '';
     if (typeof location !== 'undefined' && location.hash !== next) {
@@ -33,15 +38,24 @@
 
   // Boot: if URL hash is present, decide between adopt and preview.
   onMount(() => {
-    if (!location.hash.startsWith('#r=')) return;
-    const incoming = decodeRanking(location.hash.slice(3));
-    if (incoming.length === 0) return;
-    if (ranking.current.length === 0) {
-      ranking.current = incoming; // adopt directly into storage
+    const incomingHash = location.hash;
+    if (incomingHash.startsWith('#r=')) {
+      const incoming = decodeRanking(incomingHash.slice(3));
+      if (incoming.length > 0) {
+        if (ranking.current.length === 0) {
+          ranking.current = incoming;
+          displayed = incoming;
+        } else {
+          displayed = incoming;
+          previewMode = true;
+        }
+      } else {
+        displayed = ranking.current;
+      }
     } else {
-      displayed = incoming;
-      previewMode = true;
+      displayed = ranking.current;
     }
+    booted = true;
   });
 
   let unrankedTeams = $derived(teams.filter((t) => !displayed.includes(t.code)));
