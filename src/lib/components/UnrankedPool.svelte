@@ -47,20 +47,19 @@
   {:else}
     <ul class="flex flex-col gap-2">
       {#each visible as team, i (team.code)}
-        <li
-          class="flex items-stretch gap-2"
-          in:receive={{ key: team.code }}
-          out:send={{ key: team.code }}
-        >
-          <div class="flex-1"><TeamCard {team} rank={i + 1} showPosition /></div>
-          <button
-            type="button"
-            onclick={() => onAdd(team.code)}
-            aria-label="Add {team.name}"
-            class="bg-card hover:bg-primary/15 hover:text-primary text-foreground/70 grid w-12 shrink-0 place-items-center rounded-xl border border-white/8 transition-colors"
-          >
-            <Plus class="size-5" />
-          </button>
+        <li in:receive={{ key: team.code }} out:send={{ key: team.code }}>
+          <TeamCard {team} rank={i + 1} showPosition>
+            {#snippet actions()}
+              <button
+                type="button"
+                onclick={() => onAdd(team.code)}
+                aria-label="Add {team.name}"
+                class="bg-white/5 text-foreground/70 hover:bg-primary/20 hover:text-primary grid size-9 place-items-center rounded-full transition-colors"
+              >
+                <Plus class="size-4" />
+              </button>
+            {/snippet}
+          </TeamCard>
         </li>
       {/each}
     </ul>

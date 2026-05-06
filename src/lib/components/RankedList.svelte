@@ -93,37 +93,38 @@
           shadow placeholder. The lib walks the container's children by index
           to apply styles, so missing children = wrong element gets hidden.
         -->
-        <li class="flex items-stretch gap-2">
+        <li>
           {#if team}
-            <div class="flex-1"><TeamCard {team} rank={i + 1} showPosition accent /></div>
-            <div class="flex shrink-0 gap-1.5 print:hidden">
-              <button
-                type="button"
-                onclick={() => move(i, -1)}
-                disabled={i === 0}
-                aria-label="Move {team.name} up"
-                class="bg-card hover:bg-primary/15 text-foreground/70 hover:text-primary grid size-9 place-items-center self-center rounded-lg border border-white/8 transition-colors disabled:cursor-not-allowed disabled:opacity-30"
-              >
-                <ArrowUp class="size-4" />
-              </button>
-              <button
-                type="button"
-                onclick={() => move(i, 1)}
-                disabled={i === items.length - 1}
-                aria-label="Move {team.name} down"
-                class="bg-card hover:bg-primary/15 text-foreground/70 hover:text-primary grid size-9 place-items-center self-center rounded-lg border border-white/8 transition-colors disabled:cursor-not-allowed disabled:opacity-30"
-              >
-                <ArrowDown class="size-4" />
-              </button>
-              <button
-                type="button"
-                onclick={() => onRemove(id)}
-                aria-label="Remove {team.name}"
-                class="bg-primary/15 hover:bg-primary/25 text-primary grid size-9 place-items-center self-center rounded-lg transition-colors"
-              >
-                <X class="size-4" />
-              </button>
-            </div>
+            <TeamCard {team} rank={i + 1} showPosition accent>
+              {#snippet actions()}
+                <button
+                  type="button"
+                  onclick={() => move(i, -1)}
+                  disabled={i === 0}
+                  aria-label="Move {team.name} up"
+                  class="bg-white/5 text-foreground/70 hover:bg-white/10 hover:text-foreground grid size-8 place-items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <ArrowUp class="size-4" />
+                </button>
+                <button
+                  type="button"
+                  onclick={() => move(i, 1)}
+                  disabled={i === items.length - 1}
+                  aria-label="Move {team.name} down"
+                  class="bg-white/5 text-foreground/70 hover:bg-white/10 hover:text-foreground grid size-8 place-items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <ArrowDown class="size-4" />
+                </button>
+                <button
+                  type="button"
+                  onclick={() => onRemove(id)}
+                  aria-label="Remove {team.name}"
+                  class="bg-primary/20 hover:bg-primary/30 text-primary grid size-8 place-items-center rounded-full transition-colors"
+                >
+                  <X class="size-4" />
+                </button>
+              {/snippet}
+            </TeamCard>
           {/if}
         </li>
       {/each}
