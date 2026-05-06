@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { replaceState } from '$app/navigation';
   import { PersistedState } from 'runed';
   import { teams } from '$lib/teams';
   import { encodeRanking, decodeRanking } from '$lib/ranking';
@@ -18,17 +19,27 @@
   let booted = $state(false);
 
   $effect(() => {
-    if (booted && !previewMode) displayed = ranking.current;
-  });
-
-  $effect(() => {
-    if (!booted) return;
-    const encoded = encodeRanking(displayed);
-    const next = encoded ? `#r=${encoded}` : '';
-    if (typeof location !== 'undefined' && location.hash !== next) {
-      history.replaceState(null, '', `${location.pathname}${location.search}${next}`);
+    if (booted && !previewMode) {
+      displayed = ranking.current;
+      syncUrl(ranking.current);
     }
   });
+
+  // Mirror displayed → URL hash. Uses SvelteKit's replaceState (not raw
+  // history.replaceState) — SvelteKit's dev-mode router patches the raw call
+  // and silently drops updates, breaking shared-URL persistence. Passing {}
+  // for state because we don't use SvelteKit's shallow routing.
+  function syncUrl(list: readonly string[]) {
+    if (!booted) return;
+    const encoded = encodeRanking(list);
+    const next = encoded ? `#r=${encoded}` : '';
+    if (location.hash !== next) {
+      // Hash-only same-page update — resolve() isn't meaningful here because
+      // path + search are reused verbatim from the current URL.
+      // eslint-disable-next-line svelte/no-navigation-without-resolve
+      replaceState(`${location.pathname}${location.search}${next}`, {});
+    }
+  }
 
   // Decide what to show based on the current URL hash + saved list. Re-run on
   // every hashchange — SvelteKit's client router treats same-path different-hash
@@ -56,6 +67,7 @@
   onMount(() => {
     bootFromHash();
     booted = true;
+    syncUrl(displayed);
     const onHash = () => bootFromHash();
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);

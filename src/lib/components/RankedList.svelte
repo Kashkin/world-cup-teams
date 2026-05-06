@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { dndzone, type DndEvent } from 'svelte-dnd-action';
   import { teamsByCode } from '$lib/teams';
+  import { quotes, randomQuote, type Quote as QuoteData } from '$lib/quotes';
   import TeamCard from './TeamCard.svelte';
   import ArrowUp from '@lucide/svelte/icons/arrow-up';
   import ArrowDown from '@lucide/svelte/icons/arrow-down';
@@ -40,6 +41,13 @@
     items = e.detail.items;
     onReorder(items.map((i) => i.id));
   }
+
+  // Quote rotates on every page load. Server-prerendered with the first one (so the
+  // static HTML has something), then onMount swaps in a random pick on the client.
+  let quote = $state<QuoteData>(quotes[0]);
+  onMount(() => {
+    quote = randomQuote();
+  });
 
   function move(i: number, delta: number) {
     const j = i + delta;
@@ -145,9 +153,12 @@
     style="background-image: linear-gradient(135deg, oklch(0.27 0.12 18 / 0.2) 0%, oklch(0.22 0.08 18 / 0.5) 100%);"
   >
     <Quote class="text-primary size-5 shrink-0 self-start" fill="currentColor" />
-    <p class="text-foreground/90 flex-1 text-sm leading-relaxed">
-      The World Cup is more than a tournament.<br />It's where legends are made.
-    </p>
+    <div class="flex-1">
+      <p class="text-foreground/90 text-sm leading-relaxed">{quote.text}</p>
+      {#if quote.author}
+        <p class="text-foreground/55 mt-1.5 text-xs">— {quote.author}</p>
+      {/if}
+    </div>
     <SoccerBall class="text-primary-foreground/80 size-12 shrink-0" />
   </aside>
 </section>
