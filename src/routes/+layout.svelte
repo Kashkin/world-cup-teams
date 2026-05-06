@@ -8,9 +8,8 @@
 
   let { children } = $props();
 
-  // Update this when the site is deployed (e.g. https://world-cup-2026.vercel.app).
   // Used as the base for og:url, og:image, and the canonical link.
-  const SITE_URL = 'https://world-cup-2026.vercel.app';
+  const SITE_URL = 'https://world-cup-teams.vercel.app';
 
   const PAGE_TITLE = 'World Cup 2026 — My Teams';
   const PAGE_DESCRIPTION =
