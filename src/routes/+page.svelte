@@ -91,7 +91,7 @@
 <main class="mx-auto max-w-5xl p-4">
   <header class="mb-4 flex flex-wrap items-center justify-between gap-3">
     <h1 class="text-2xl font-semibold">World Cup 2026 — My Teams</h1>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 print:hidden">
       {#if copiedAt > 0}
         <span class="text-muted-foreground text-sm">Link copied!</span>
       {/if}
@@ -103,7 +103,7 @@
 
   {#if previewMode}
     <div
-      class="bg-muted mb-4 flex flex-wrap items-center justify-between gap-2 rounded-md border p-3"
+      class="bg-muted mb-4 flex flex-wrap items-center justify-between gap-2 rounded-md border p-3 print:hidden"
     >
       <p class="text-sm">
         You're viewing a shared list ({displayed.length}

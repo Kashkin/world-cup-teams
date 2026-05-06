@@ -25,7 +25,7 @@
   );
 </script>
 
-<section class="flex flex-col gap-2">
+<section class="flex flex-col gap-2 print:hidden">
   <Input bind:value={query} placeholder="Search teams" />
   {#if filtered.length === 0}
     <p class="text-muted-foreground py-2 text-sm">No teams match.</p>

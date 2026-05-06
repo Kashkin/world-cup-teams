@@ -56,26 +56,28 @@
       {#if team}
         <li class="flex items-center gap-2">
           <div class="flex-1"><TeamCard {team} rank={i + 1} /></div>
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            onclick={() => move(i, -1)}
-            disabled={i === 0}
-            aria-label="Move {team.name} up">↑</Button
-          >
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            onclick={() => move(i, 1)}
-            disabled={i === items.length - 1}
-            aria-label="Move {team.name} down">↓</Button
-          >
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            onclick={() => onRemove(id)}
-            aria-label="Remove {team.name}">×</Button
-          >
+          <div class="flex gap-2 print:hidden">
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onclick={() => move(i, -1)}
+              disabled={i === 0}
+              aria-label="Move {team.name} up">↑</Button
+            >
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onclick={() => move(i, 1)}
+              disabled={i === items.length - 1}
+              aria-label="Move {team.name} down">↓</Button
+            >
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onclick={() => onRemove(id)}
+              aria-label="Remove {team.name}">×</Button
+            >
+          </div>
         </li>
       {/if}
     {/each}
