@@ -163,7 +163,28 @@ async function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+// Flag teams whose parsed output is known suspect — the user reviews and corrects these
+// in data/teams.csv before we proceed to JSON emit.
+const PARSE_FAILURES = new Set(['USA', 'AUS', 'BEL', 'FRA', 'GER', 'NED']);
+const INFLATED_WINS_SUSPECTED = new Set([
+  'ARG',
+  'IRN',
+  'JPN',
+  'KOR',
+  'KSA',
+  'MAR',
+  'TUN',
+  'BIH',
+  'ESP',
+  'SWE',
+  'CAN',
+  'PAN',
+  'IRQ',
+  'QAT',
+]);
+
 async function main() {
+  const { writeFile, mkdir } = await import('node:fs/promises');
   const historicalByCode = new Map<string, Historical>();
   for (const entry of WC2026_TEAMS) {
     process.stdout.write(`  ${entry.code} ${entry.name.padEnd(24)} `);
@@ -174,7 +195,44 @@ async function main() {
     );
     await sleep(200);
   }
-  console.log(`\nParsed historical stats for ${historicalByCode.size} teams.`);
+
+  // Write CSV for user review.
+  const csvHeader = [
+    'code',
+    'name',
+    'confederation',
+    'appearances',
+    'trophies',
+    'lastTrophy',
+    'matchWins',
+    'bestFinish',
+    'review',
+  ].join(',');
+  const csvRows = WC2026_TEAMS.map((t) => {
+    const h = historicalByCode.get(t.code)!;
+    let review = '';
+    if (PARSE_FAILURES.has(t.code)) review = 'PARSE_FAILED — please fill from Wikipedia';
+    else if (INFLATED_WINS_SUSPECTED.has(t.code))
+      review = 'matchWins likely inflated (WC + qualification combined)';
+    else if (!t.wpHistory) review = 'first-time qualifier — defaults applied';
+    return [
+      t.code,
+      JSON.stringify(t.name),
+      t.confederation,
+      h.appearances,
+      h.trophies,
+      h.lastTrophy ?? '',
+      h.matchWins,
+      JSON.stringify(h.bestFinish),
+      JSON.stringify(review),
+    ].join(',');
+  });
+  await mkdir('data', { recursive: true });
+  await writeFile('data/teams.csv', [csvHeader, ...csvRows].join('\n') + '\n');
+
+  console.log(`\nWrote data/teams.csv (${WC2026_TEAMS.length} rows).`);
+  console.log(`  ${PARSE_FAILURES.size} teams need full historical fill (review="PARSE_FAILED").`);
+  console.log(`  ${INFLATED_WINS_SUSPECTED.size} teams have suspected inflated matchWins.`);
 }
 
 main().catch((e: unknown) => {
