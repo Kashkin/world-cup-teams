@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -er '.tool_input.file_path // empty' | xargs -r pnpm exec prettier --write --ignore-unknown"
+          },
+          {
+            "type": "command",
+            "command": "jq -er '.tool_input.file_path // empty' | xargs -r pnpm exec eslint --fix --no-warn-ignored"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm lint && pnpm format:check"
+          }
+        ]
+      }
+    ]
+  }
+}
